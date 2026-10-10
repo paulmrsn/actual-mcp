@@ -24,6 +24,11 @@ import { fetchAllAccounts } from './core/data/fetch-accounts.js';
 import { getActualConnection } from './integrations/actual/connection.js';
 import { createServer } from './server.js';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
+import { redirectConsoleToStderr } from './stdout-guard.js';
+
+// Reason: must run before anything logs — @actual-app/core writes to stdout via
+// console.log, which corrupts the MCP stdio JSON-RPC stream. See stdout-guard.ts.
+redirectConsoleToStderr();
 
 // Reason: dotenv@17 (dotenvx) prints to stdout by default, which breaks MCP stdio JSON parsing
 dotenv.config({ path: '.env', quiet: true } as Parameters<typeof dotenv.config>[0]);
